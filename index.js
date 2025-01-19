@@ -7,6 +7,7 @@ const Person = require('./models/person')
 
 app.use(cors())
 app.use(express.json())
+app.use(express.static('dist'))
 
 
 // Custom token to log name and number as a JSON string
