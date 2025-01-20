@@ -19,6 +19,8 @@ morgan.token('json-body', (req) => {
 // Configure Morgan to log the method, URL, status, response time, and JSON formatted body
 app.use(morgan(':method :url :status :response-time ms - :json-body'));
 
+let persons = []
+
 // let persons = [
 //     { 
 //       "id": "1",
