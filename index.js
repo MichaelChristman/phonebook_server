@@ -81,19 +81,19 @@ app.post('/api/persons', (request, response)=>{
   
   const body = request.body
 
-  //missing name or number
-  if(!body.name || !body.number){
-    return response.status(400).json({
-      error:'Missing Name or Number'
-    })
-  }
+  // //missing name or number
+  // if(!body.name || !body.number){
+  //   return response.status(400).json({
+  //     error:'Missing Name or Number'
+  //   })
+  // }
 
-  //name already exists
-  if(body.some(obj => obj.name === body.name)){
-    return response.status(400).json({
-      error:"This person already exists"
-    })
-  }
+  // //name already exists
+  // if(body.some(obj => obj.name === body.name)){
+  //   return response.status(400).json({
+  //     error:"This person already exists"
+  //   })
+  // }
 
   const person = new Person({
     name:body.name,
