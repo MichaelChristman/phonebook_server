@@ -77,29 +77,38 @@ app.get('/api/persons/:id', (request,response) =>{
 })
 
 app.post('/api/persons', (request, response)=>{
-  const nueID =  String(Math.floor(Math.random() * 100))
+  // const nueID =  String(Math.floor(Math.random() * 100))
   
-  const person = request.body
+  const body = request.body
 
   //missing name or number
-  if(!person.name || !person.number){
+  if(!body.name || !bodyn.number){
     return response.status(400).json({
       error:'Missing Name or Number'
     })
   }
 
   //name already exists
-  if(persons.some(obj => obj.name === person.name)){
+  if(body.some(obj => obj.name === body.name)){
     return response.status(400).json({
       error:"This person already exists"
     })
   }
 
-  person.id =  nueID
+  const person = new Person({
+    name:body.name,
+    number:body.number,
+  })
 
-  persons = persons.concat(person)
-  //response.send('hello,world!')
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
+
+  // person.id =  nueID
+
+  // persons = persons.concat(person)
+  // //response.send('hello,world!')
+  // response.json(person)
 })
 
 
