@@ -82,7 +82,7 @@ app.post('/api/persons', (request, response)=>{
   const body = request.body
 
   //missing name or number
-  if(!body.name || !bodyn.number){
+  if(!body.name || !body.number){
     return response.status(400).json({
       error:'Missing Name or Number'
     })
