@@ -66,15 +66,25 @@ app.get('/api/persons', (request,response) =>{
   
 })
 
-app.get('/api/persons/:id', (request,response) =>{
-  const id = request.params.id
-  const person = persons.find(person => person.id === id)
+app.get('/api/persons/:id', (request,response,next) =>{
+  // const id = request.params.id
+  // const person = persons.find(person => person.id === id)
   
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  // if (person) {
+  //   response.json(person)
+  // } else {
+  //   response.status(404).end()
+  // }
+  Person.findById(request.params.id)
+    .then(person => {
+      if(person){
+        response.json(person)
+      }else{
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
+
 })
 
 app.post('/api/persons', (request, response)=>{
@@ -113,7 +123,7 @@ app.post('/api/persons', (request, response)=>{
 })
 
 
-app.delete('/api/persons/:id',(request,response)=>{
+app.delete('/api/persons/:id',(request,response,next)=>{
   // const id = request.params.id
   // persons = persons.filter(person => person.id !== id)
   Person.findByIdAndDelete(request.params.id)
