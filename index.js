@@ -6,9 +6,33 @@ const app = express()
 const Person = require('./models/person')
 
 app.use(cors())
-app.use(express.json())
 app.use(express.static('dist'))
+app.use(express.json())
 
+
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+app.use(requestLogger)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
 
 // Custom token to log name and number as a JSON string
 morgan.token('json-body', (req) => {
@@ -20,29 +44,6 @@ morgan.token('json-body', (req) => {
 app.use(morgan(':method :url :status :response-time ms - :json-body'));
 
 let persons = []
-
-// let persons = [
-//     { 
-//       "id": "1",
-//       "name": "Arto Hellas", 
-//       "number": "040-123456"
-//     },
-//     { 
-//       "id": "2",
-//       "name": "Ada Lovelace", 
-//       "number": "39-44-5323523"
-//     },
-//     { 
-//       "id": "3",
-//       "name": "Dan Abramov", 
-//       "number": "12-43-234345"
-//     },
-//     { 
-//       "id": "4",
-//       "name": "Mary Poppendieck", 
-//       "number": "39-23-6423122"
-//     }
-// ]
 
 app.get('/', (request, response) => {
     response.send('<h1>Phonebook Backend Connected</h1>')
@@ -122,6 +123,9 @@ app.delete('/api/persons/:id',(request,response)=>{
   .catch(error => next(error))
   
 })
+
+app.use(unknownEndpoint)
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT , () => {
