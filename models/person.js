@@ -15,9 +15,39 @@ mongoose.connect(url)
   })
 
 const personSchema = new mongoose.Schema({
-    name: String, // Name of the person
-    number: String, // Phone number of the person5
+    name:{
+      type:String,
+      minLength:3,
+      required:true
+    }, 
+    number: {
+      type: String,
+      required: true,
+      validate: {
+        validator: function(v) {
+          return /^\d{2,3}-\d{5,}$/.test(v);
+        },
+        message: props => `${props.value} is not a valid phone number format! It should be in the form XX-XXXXX or XXX-XXXXX`
+      }
+    }
 });
+
+// Apply validators when updating
+personSchema.pre('findOneAndUpdate', function (next) {
+  this.setOptions({ runValidators: true });
+  next();
+});
+
+personSchema.pre('updateOne', function (next) {
+  this.setOptions({ runValidators: true });
+  next();
+});
+
+personSchema.pre('updateMany', function (next) {
+  this.setOptions({ runValidators: true });
+  next();
+});
+
 
 personSchema.set('toJSON', {
     transform: (document, returnedObject) => {
