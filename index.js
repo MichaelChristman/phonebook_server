@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
@@ -26,7 +26,7 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   }else if(error.name === 'ValidationError'){
-    return response.status(400).json({error:error.message})
+    return response.status(400).json({ error:error.message })
   }
 
   next(error)
@@ -38,40 +38,40 @@ const unknownEndpoint = (request, response) => {
 
 // Custom token to log name and number as a JSON string
 morgan.token('json-body', (req) => {
-  const { name, number } = req.body;
-  return JSON.stringify({ name: name || '-', number: number || '-' });
-});
+  const { name, number } = req.body
+  return JSON.stringify({ name: name || '-', number: number || '-' })
+})
 
 // Configure Morgan to log the method, URL, status, response time, and JSON formatted body
-app.use(morgan(':method :url :status :response-time ms - :json-body'));
+app.use(morgan(':method :url :status :response-time ms - :json-body'))
 
 let persons = []
 
 app.get('/', (request, response) => {
-    response.send('<h1>Phonebook Backend Connected</h1>')
+  response.send('<h1>Phonebook Backend Connected</h1>')
 })
 
 app.get('/info', (request, response) => {
-  const timestamp = Date.now();
-  const date = new Date(timestamp);
+  const timestamp = Date.now()
+  const date = new Date(timestamp)
 
   response.send(
     `<p>Phonebook has info for ${persons.length} people</p><p>${date.toString()}</p>`
   )
 })
 
-app.get('/api/persons', (request,response) =>{
-    
-    Person.find({}).then(persons => {
-      response.json(persons)
-    })
-  
+app.get('/api/persons', (request,response) => {
+
+  Person.find({}).then(persons => {
+    response.json(persons)
+  })
+
 })
 
-app.get('/api/persons/:id', (request,response,next) =>{
+app.get('/api/persons/:id', (request,response,next) => {
   // const id = request.params.id
   // const person = persons.find(person => person.id === id)
-  
+
   // if (person) {
   //   response.json(person)
   // } else {
@@ -89,9 +89,9 @@ app.get('/api/persons/:id', (request,response,next) =>{
 
 })
 
-app.post('/api/persons', (request, response, next)=>{
+app.post('/api/persons', (request, response, next) => {
   // const nueID =  String(Math.floor(Math.random() * 100))
-  
+
   const body = request.body
 
   // //missing name or number
@@ -131,29 +131,29 @@ app.put('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndUpdate(
     request.params.id,
     { name,number },
-    { new: true, runValidators:true,context:'query'}
+    { new: true, runValidators:true,context:'query' }
   )
-  .then(updatedPerson => {
-    response.json(updatedPerson)
-  })
-  .catch(error => next(error))
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 
-app.delete('/api/persons/:id',(request,response,next)=>{
+app.delete('/api/persons/:id',(request,response,next) => {
   // const id = request.params.id
   // persons = persons.filter(person => person.id !== id)
   Person.findByIdAndDelete(request.params.id)
-  .then(result => {
+    .then(() => {
       response.status(204).end()
-  })
-  .catch(error => {
-    if (error.name === "ValidationError") {
-      return response.status(400).json({ error: error.message });
-    }
-    next(error); // Pass other errors to the general error handler
-  })
-  
+    })
+    .catch(error => {
+      if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
+      }
+      next(error) // Pass other errors to the general error handler
+    })
+
 })
 
 app.use(unknownEndpoint)
